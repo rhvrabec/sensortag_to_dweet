@@ -122,7 +122,8 @@
 	</p>
 
 	<script>
-	var sensortag;
+	var sensortag,
+			evtdata = {};
 
 	function initialiseSensorTag()
 	{
@@ -227,84 +228,6 @@
 
 	}
 
-
-	function dweetcallback(data) {
-
-			var dweetData = {};
-
-	    // Calculate temperature from raw sensor data.
-	    var values = sensortag.getTemperatureValues(data)
-	    var ac = values.ambientTemperature
-	    var af = sensortag.celsiusToFahrenheit(ac)
-	    var tc = values.targetTemperature
-	    var tf = sensortag.celsiusToFahrenheit(tc)
-
-	    // Calculate the x,y,z accelerometer values from raw data.
-	    var values = sensortag.getAccelerometerValues(data)
-	    var x = values.x
-	    var y = values.y
-	    var z = values.z
-
-	    // Calculate the humidity values from raw data.
-	    var values = sensortag.getHumidityValues(data)
-
-	    // Calculate the humidity temperature (C and F).
-	    var tc = values.humidityTemperature
-	    var tf = sensortag.celsiusToFahrenheit(tc)
-
-	    // Calculate the relative humidity.
-	    var h = values.relativeHumidity
-
-
-	    // Calculate the magnetometer values from raw sensor data.
-	    var values = sensortag.getMagnetometerValues(data)
-	    var x = values.x
-	    var y = values.y
-	    var z = values.z
-
-
-	    // Calculate pressure from raw sensor data.
-	    var values = sensortag.getBarometerValues(data)
-	    var pressure = values.pressure
-
-
-	    // Calculate the gyroscope values from raw sensor data.
-	    var values = sensortag.getGyroscopeValues(data)
-	    var x = values.x
-	    var y = values.y
-	    var z = values.z
-
-	    var lux = sensortag.getLuxometerValue(data)
-
-
-	    dweetData["ambientTemp"] = af;
-	    dweetData["sensorTemp"] = tf;
-
-	    dweetData["gyroX"] = x; 
-	    dweetData["gyroY"] = y; 
-	    dweetData["gyroZ"] = z;
-
-	    dweetData["pressure"] = pressure;
-	    dweetData["humidityTemperature"] = tf;
-	    dweetData["relativeHumidity"] = t;
-	    
-	    dweetData["magX"] = x;
-	    dweetData["magY"] = y;
-	    dweetData["magZ"] = z;
-
-	    dweetData['accelX'] = x;
-	    dweetData['accelY'] = y;
-	    dweetData['accelZ'] = z;
-
-	    dweetData['lux'] = lux;
-
-	    postDweet(dweetData);
-	    alert(dweetData);
-
-	    dweetData = {};
-
-	  }
-
 	function errorHandler(error)
 	{
 		console.log('Error: ' + error)
@@ -388,8 +311,8 @@
 
 		// dweetData["ambientTemp"] = af;
 		// dweetData["sensorTemp"] = tf;
-		// createDweetData("ambientTemp", af);
-		// createDweetData("sensorTemp", tf);
+		postDweet("ambientTemp", af);
+		postDweet("sensorTemp", tf);
 	}
 
 	function accelerometerHandler(data)
@@ -580,31 +503,13 @@
 		return hex
 	}
 	
-
-	function createDweetData(key,value){
-		var dweetData = {};
-
-		dweetData[key] = value;
-
-		if(Object.keys(dweetData).length==14){
-			postDweet(dweetData);
-			displayValue('dweet', 'posted');
-			dweetData={};
-		} else {
-			displayValue('dweet', 'GETTING DATA');
-		}
-
-	}
 	// DWEET.IO
 	function postDweet(key,value) {
 		//lets JSON encode the data before dweeting
 		// var evtdata = JSON.stringify()
-			var counter = 0,
-					evtdata = {};
 
 			evtdata[key] = value;
-			counter = counter + 1;
-			displayValue('dweet', evtdata);
+			displayValue('dweet', evtdata[key]);
 
 				$.ajax({
 				  type: "POST",
@@ -612,16 +517,12 @@
 				  data: evtdata,
 				  dataType: 'json',
 				  success: function(response){
-			  		var timestamp = jQuery.parseJSON(response.with.created);
-			  		displayValue('dweet', 'posted');
-			  		displayValue('dweet', 'success');
+				  	displayValue('dweet', 'posted');
 				  },
 				  error: function(e) {
 				      alert.log(e);
 				  }
 				});
-				counter = 0;
-				evtdata = {};
 				// alert('success!');
 	}
 
