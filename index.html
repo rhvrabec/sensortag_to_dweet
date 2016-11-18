@@ -73,10 +73,10 @@
 		<span id="dweet">[no dweet posted]</span>
 	</p>
 
-	<h2>Keypress:</h2>
+<!-- 	<h2>Keypress:</h2>
 	<p>
 		<span id="KeypressData">[Waiting for value]</span>
-	</p>
+	</p> -->
 
 	<h2>Temperature:</h2>
 	<p>
@@ -144,7 +144,7 @@
 		sensortag
 			.statusCallback(statusHandler)
 			.errorCallback(errorHandler)
-			.keypressCallback(keypressHandler)
+			// .keypressCallback(keypressHandler)
 			.temperatureCallback(temperatureHandler, 5000)
 			.humidityCallback(humidityHandler, 5000)
 			.barometerCallback(barometerHandler, 5000)
@@ -311,8 +311,8 @@
 
 		// dweetData["ambientTemp"] = af;
 		// dweetData["sensorTemp"] = tf;
-		postDweet("ambientTemp", af);
-		postDweet("sensorTemp", tf);
+		postDweet("ambientTemp", af.toFixed(5));
+		postDweet("sensorTemp", tf.toFixed(5));
 	}
 
 	function accelerometerHandler(data)
@@ -336,12 +336,10 @@
 
 		// Update the value displayed.
 		displayValue('AccelerometerData', string);
-		// dweetData['accelX'] = x;
-		// dweetData['accelY'] = y;
-		// dweetData['accelZ'] = z;
-		postDweet('accelXdweetData', x);
-		postDweet('accelY', y);
-		postDweet('accelZ', z);
+
+		postDweet('accelX', x.toFixed(5));
+		postDweet('accelY', y.toFixed(5));
+		postDweet('accelZ', z.toFixed(5));
 	}
 
 	function humidityHandler(data)
@@ -366,8 +364,6 @@
 
 		// Update the value displayed.
 		displayValue('HumidityData', string);
-		// dweetData["humidityTemperature"] = tf;
-		// dweetData["relativeHumidity"] = t;
 		postDweet("humidityTemperature", tf);
 		postDweet("relativeHumidity", t);
 	}
@@ -396,9 +392,9 @@
 		// dweetData["magX"] = x;
 		// dweetData["magY"] = y;
 		// dweetData["magZ"] = z;
-		postDweet("magX", x);
-		postDweet("magY", y);
-		postDweet("magZ", z);
+		postDweet("magX", x.toFixed(5));
+		postDweet("magY", y.toFixed(5));
+		postDweet("magZ", z.toFixed(5));
 	}
 
 	function barometerHandler(data)
@@ -437,28 +433,26 @@
 
 		// Update the value displayed.
 		displayValue('GyroscopeData', string)
-		// dweetData["gyroX"] = x; 
-		// dweetData["gyroY"] = y; 
-		// dweetData["gyroZ"] = z;
-		postDweet("gyroX", x); 
-		postDweet("gyroY", y); 
-		postDweet("gyroZ", z);
+		postDweet("gyroX", x.toFixed(5)); 
+		postDweet("gyroY", y.toFixed(5)); 
+		postDweet("gyroZ", z.toFixed(5));
 	}
 
-	// function luxometerHandler(data)
-	// {
-	// 	var value = sensortag.getLuxometerValue(data)
+	function luxometerHandler(data)
+	{
+		var value = sensortag.getLuxometerValue(data)
 
-	// 	// Prepare the information to display.
-	// 	string =
-	// 		//'raw: <span style="font-family: monospace;">0x' +
-	// 		//	bufferToHexStr(data, 0, 2) + '</span><br/>' +
-	// 		'Light level: ' + value.toPrecision(5) + ' lux<br/>'
+		// Prepare the information to display.
+		string =
+			//'raw: <span style="font-family: monospace;">0x' +
+			//	bufferToHexStr(data, 0, 2) + '</span><br/>' +
+			'Light level: ' + value.toPrecision(5) + ' lux<br/>'
 
-	// 	// Update the value displayed.
-	// 	displayValue('LuxometerData', string)
+		// Update the value displayed.
+		displayValue('LuxometerData', string)
+		postDweet('Light level', value.toPrecision(5));
 
-	// }
+	}
 
 	function displayValue(elementId, value)
 	{
@@ -509,7 +503,7 @@
 		// var evtdata = JSON.stringify()
 
 			evtdata[key] = value;
-			displayValue('dweet', evtdata[key]);
+			setTimeout(displayValue('dweet', 'getting ' + key), 10000);
 
 				$.ajax({
 				  type: "POST",
@@ -517,10 +511,12 @@
 				  data: evtdata,
 				  dataType: 'json',
 				  success: function(response){
-				  	displayValue('dweet', 'posted');
+				  	setTimeout(displayValue('dweet', 'posted'), 5000);
+				  	console.log('success');
 				  },
 				  error: function(e) {
-				      alert.log(e);
+				  	displayValue('dweet', 'error posting data');
+				    console.log(e);
 				  }
 				});
 				// alert('success!');
