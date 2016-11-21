@@ -364,8 +364,8 @@
 
 		// Update the value displayed.
 		displayValue('HumidityData', string);
-		postDweet("humidityTemperature", tf);
-		postDweet("relativeHumidity", h);
+		postDweet("humidityTemperature", tf.toFixed(2));
+		postDweet("relativeHumidity", h.toFixed(2));
 	}
 
 	function magnetometerHandler(data)
